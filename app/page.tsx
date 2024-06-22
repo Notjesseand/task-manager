@@ -1,11 +1,15 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { addData } from "@/api/addTask";
+import { getData } from "@/api/getTasks";
 import { ring } from "ldrs";
 import { useToast } from "@/components/ui/use-toast";
 import { bouncy } from "ldrs";
 
-// Default values shown
+interface Data {
+  name: string;
+  completed: boolean;
+}
 
 const Page = () => {
   if (window !== undefined) {
@@ -21,6 +25,7 @@ const Page = () => {
     "idle" | "success" | "error"
   >("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [tasks, setTasks] = useState<Data[]>([]);
 
   const handleChange = (e: any) => {
     const { name, value } = e.target;
@@ -29,6 +34,22 @@ const Page = () => {
       [name]: value,
     }));
   };
+  
+  // fetching data from the database
+
+  const fetchData = async () => {
+    try {
+      const Data = await getData();
+      if (Data) {
+        setTasks(Data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
@@ -46,6 +67,7 @@ const Page = () => {
     setFormData({
       name: "",
     });
+    fetchData();
   };
 
   useEffect(() => {
@@ -59,15 +81,15 @@ const Page = () => {
   }, [submissionState, errorMessage]);
 
   return (
-    <div className="h-screen w-full bg-slate-200 flex justify-center items-center">
-      <div className="bg-white w-1/2 pt-9 pb-20 rounded">
+    <div className="min-h-screen w-full bg-slate-200 pt-32 pb-20">
+      <div className="bg-white w-1/2 pt-9 pb-20 rounded mx-auto">
         <p className="text-center pb-3 font-semibold text-lg font-montserrat">
           Task Manager
         </p>
         <form
           action=""
           method="post"
-          className="flex w-full px-8"
+          className="flex w-full px-8 "
           onSubmit={handleSubmit}
         >
           <input
@@ -90,6 +112,12 @@ const Page = () => {
             />
           )}
         </form>
+      </div>
+
+      <div className="font-nunito w-1/2 mx-auto pt-5 text-lg">
+        {tasks.map((task, key) => (
+          <p>{task.name}</p>
+        ))}
       </div>
     </div>
   );

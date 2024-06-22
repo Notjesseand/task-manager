@@ -1,18 +1,23 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { addData } from "@/api/addTask";
-import { getData } from "@/api/getTasks";
+import { addTask } from "@/api/addTask";
+import { getTasks } from "@/api/getTasks";
+import { deleteTask } from "@/api/deleteTask";
 import { ring } from "ldrs";
 import { useToast } from "@/components/ui/use-toast";
 import { bouncy } from "ldrs";
+import { FaTrashAlt } from "react-icons/fa";
+import { TiTick } from "react-icons/ti";
 
 interface Data {
   name: string;
   completed: boolean;
+  _id: any;
 }
 
 const Page = () => {
-  if (window !== undefined) {
+  // handling possible server build time errors
+  if (typeof window !== "undefined") {
     bouncy.register();
     ring.register();
   }
@@ -27,6 +32,7 @@ const Page = () => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [tasks, setTasks] = useState<Data[]>([]);
 
+  // handling changes in form value
   const handleChange = (e: any) => {
     const { name, value } = e.target;
     setFormData((prevFormData) => ({
@@ -34,12 +40,11 @@ const Page = () => {
       [name]: value,
     }));
   };
-  
-  // fetching data from the database
 
+  // fetching tasks from the database
   const fetchData = async () => {
     try {
-      const Data = await getData();
+      const Data = await getTasks();
       if (Data) {
         setTasks(Data);
       }
@@ -51,11 +56,12 @@ const Page = () => {
     fetchData();
   }, []);
 
+  // handling all the submit functioanlities
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     setLoading(true);
     try {
-      await addData(formData);
+      await addTask(formData);
       setSubmissionState("success");
       setErrorMessage(null);
     } catch (error: any) {
@@ -72,13 +78,26 @@ const Page = () => {
 
   useEffect(() => {
     if (submissionState === "success") {
-      toast({ title: "", description: "Data added successfully" });
+      toast({ title: "", description: "Task added successfully" });
       setSubmissionState("idle"); // Reset state to idle
     } else if (submissionState === "error" && errorMessage) {
       toast({ title: "We encountered an error", description: errorMessage });
       setSubmissionState("idle"); // Reset state to idle
     }
   }, [submissionState, errorMessage]);
+
+  // delete a task
+  const deleteATask = async (id: any) => {
+    try {
+      await deleteTask(id);
+      fetchData();
+      toast({ title: "", description: "Task deleted successfully" });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  console.log(tasks);
 
   return (
     <div className="min-h-screen w-full bg-slate-200 pt-32 pb-20">
@@ -114,9 +133,21 @@ const Page = () => {
         </form>
       </div>
 
-      <div className="font-nunito w-1/2 mx-auto pt-5 text-lg">
-        {tasks.map((task, key) => (
-          <p>{task.name}</p>
+      <div className="font-nunito w-1/2 mx-auto pt-5 text-lg flex flex-col-reverse">
+        {tasks.map((task, index) => (
+          <p
+            key={index}
+            className="w-full py-2 bg-white mt-1 rounded px-3 capitalize flex justify-between items-center"
+          >
+            {task.name}
+            <div className="flex items-center gap-3">
+              <TiTick className="text-green-500 cursor-pointer hover:text-black text-2xl" />
+              <FaTrashAlt
+                onClick={() => deleteATask(task._id)}
+                className="text-red-600 cursor-pointer hover:text-black"
+              />
+            </div>
+          </p>
         ))}
       </div>
     </div>

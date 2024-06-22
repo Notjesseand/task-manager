@@ -1,11 +1,10 @@
 import axios from "axios";
 
-export const addTask = async (data: any) => {
-   const url = "http://localhost:3000/api/v1/tasks";
-
+export const deleteTask = async (id: any) => {
+  const url = `http://localhost:3000/api/v1/tasks/${id}`;
   try {
-    const response = await axios.post(url, data);
-    return response.data;
+    await axios.delete(url);
+    return "Task Deleted";
   } catch (error) {
     if (axios.isAxiosError(error)) {
       // Capture detailed error message from API response

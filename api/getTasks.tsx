@@ -1,6 +1,6 @@
 import axios from "axios"
 
-export const getData = async()=>{
+export const getTasks = async()=>{
   const url = "http://localhost:3000/api/v1/tasks";
   try{
     const response = await axios.get(url);

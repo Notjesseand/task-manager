@@ -57,6 +57,11 @@ const Page = () => {
     fetchData();
   }, []);
 
+  // sorting the tasks
+  const sortedTasks = [...tasks].sort((a: any, b: any) => {
+    return a.completed - b.completed;
+  });
+
   // handling all the submit functioanlities
   const handleSubmit = async (e: any) => {
     e.preventDefault();
@@ -146,8 +151,8 @@ const Page = () => {
         </form>
       </div>
 
-      <div className="font-nunito w-11/12 sm:w-5/6 md:w-1/2 mx-auto pt-5 text-lg flex flex-col-reverse">
-        {tasks.map((task, index) => (
+      <div className="font-nunito w-11/12 sm:w-5/6 md:w-1/2 mx-auto pt-5 text-lg flex flex-col">
+        {sortedTasks.map((task, index) => (
           <p
             key={index}
             style={{ backgroundColor: task.completed == true ? "#b7e8ea" : "" }}

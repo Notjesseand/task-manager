@@ -8,6 +8,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { bouncy } from "ldrs";
 import { FaTrashAlt } from "react-icons/fa";
 import { TiTick } from "react-icons/ti";
+import { updateTask } from "@/api/updateTask";
 
 interface Data {
   name: string;
@@ -76,6 +77,7 @@ const Page = () => {
     fetchData();
   };
 
+  // handling submission notification
   useEffect(() => {
     if (submissionState === "success") {
       toast({ title: "", description: "Task added successfully" });
@@ -85,6 +87,17 @@ const Page = () => {
       setSubmissionState("idle"); // Reset state to idle
     }
   }, [submissionState, errorMessage]);
+
+  // update a task
+  const updateATask = async (id: any) => {
+    try {
+      await updateTask(id, { completed: true });
+      console.log("Task updated successfully");
+    } catch (error) {
+      console.log(error);
+    }
+    fetchData();
+  };
 
   // delete a task
   const deleteATask = async (id: any) => {
@@ -101,7 +114,7 @@ const Page = () => {
 
   return (
     <div className="min-h-screen w-full bg-slate-200 pt-32 pb-20">
-      <div className="bg-white w-1/2 pt-9 pb-20 rounded mx-auto">
+      <div className="bg-white w-11/12 sm:w-5/6 md:w-1/2 pt-9 pb-20 rounded mx-auto">
         <p className="text-center pb-3 font-semibold text-lg font-montserrat">
           Task Manager
         </p>
@@ -133,15 +146,24 @@ const Page = () => {
         </form>
       </div>
 
-      <div className="font-nunito w-1/2 mx-auto pt-5 text-lg flex flex-col-reverse">
+      <div className="font-nunito w-11/12 sm:w-5/6 md:w-1/2 mx-auto pt-5 text-lg flex flex-col-reverse">
         {tasks.map((task, index) => (
           <p
             key={index}
-            className="w-full py-2 bg-white mt-1 rounded px-3 capitalize flex justify-between items-center"
+            style={{ backgroundColor: task.completed == true ? "#b7e8ea" : "" }}
+            className="w-full py-2 bg-[#fff] mt-1 rounded px-3 capitalize flex justify-between items-center"
           >
             {task.name}
             <div className="flex items-center gap-3">
-              <TiTick className="text-green-500 cursor-pointer hover:text-black text-2xl" />
+              {task.completed == true ? (
+                "done"
+              ) : (
+                <TiTick
+                  className="text-green-500 cursor-pointer hover:text-black text-2xl"
+                  onClick={() => updateATask(task._id)}
+                />
+              )}
+
               <FaTrashAlt
                 onClick={() => deleteATask(task._id)}
                 className="text-red-600 cursor-pointer hover:text-black"

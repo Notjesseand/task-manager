@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export const deleteTask = async (id: any) => {
-  const url = `http://localhost:3000/api/v1/tasks/${id}`;
+  const url = `https://task-manager-node-js.onrender.com/api/v1/tasks/${id}`;
   try {
     await axios.delete(url);
     return "Task Deleted";

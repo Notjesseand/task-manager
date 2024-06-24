@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export const addTask = async (data: any) => {
-   const url = "http://localhost:3000/api/v1/tasks";
+   const url = "https://task-manager-node-js.onrender.com/api/v1/tasks";
 
   try {
     const response = await axios.post(url, data);

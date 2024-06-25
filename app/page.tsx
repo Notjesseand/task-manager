@@ -32,7 +32,6 @@ const Page = () => {
   >("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [tasks, setTasks] = useState<Data[]>([]);
-  const jaja = "";
 
   // handling changes in form value
   const handleChange = (e: any) => {
